@@ -32,37 +32,38 @@ namespace WpfSystemProgramming5
         private void ButtonRaceCondition_Click(object sender, RoutedEventArgs e)
         {
             SharedCounter = 0;
-            var threads = new Thread[10];
+            var threads = new Thread[10]; 
 
             for (int i = 0; i < threads.Length; i++)
             {
-                threads[i] = new Thread(() =>
+                threads[i] = new Thread(() =>  
                 {
                     for (int j = 0; j < 10; j++)
-                        IncrementWithoutLock();
+                        IncrementWithoutLock(); 
                 });
-                threads[i].Start();
+                threads[i].Start(); 
             }
 
             foreach (var count in threads)
              count.Join();
 
-            MessageBox.Show($"Итоговый счетчик: {SharedCounter}", "Результат");
+            MessageBox.Show($"Итоговый счетчик: {SharedCounter}", "Результат"); 
         }
 
-
+      
         private void IncrementWithLock()
         {
             lock (SyncObj)
             {
-                int temp = SharedCounter;
-                temp++;
-                SharedCounter = temp;
-            }
+            int temp = SharedCounter;
+            temp++;
+            SharedCounter = temp;
         }
-            private void ButtonSafeAdd_Click(object sender, RoutedEventArgs e)
+        }
+        private void ButtonSafeAdd_Click(object sender, RoutedEventArgs e)
         {
-            SharedCounter = 0;
+            SharedCounter = 0; 
+
             var threads = new Thread[10];
 
             for (int i = 0; i < threads.Length; i++)
@@ -70,7 +71,7 @@ namespace WpfSystemProgramming5
                 threads[i] = new Thread(() =>
                 {
                     for (int j = 0; j < 10; j++)
-                        IncrementWithLock();
+                        IncrementWithLock(); 
                 });
                 threads[i].Start();
             }
@@ -80,16 +81,29 @@ namespace WpfSystemProgramming5
 
             MessageBox.Show($"Итоговый счетчик: {SharedCounter}", "Результат");
         }
+
+     
+        private void IncrementWithLock()
+        {
+            lock (SyncObj)
+            {
+                int temp = SharedCounter;
+                temp++;
+                SharedCounter = temp;
+            }
+        }
+
+     
         private void ButtonMonitorTimeout_Click(object sender, RoutedEventArgs e)
         {
             bool success = false;
             try
             {
-                if (Monitor.TryEnter(SyncObj, TimeSpan.FromMilliseconds(10)))
+                if (Monitor.TryEnter(SyncObj, TimeSpan.FromMilliseconds(10))) 
                 {
                     success = true;
                     SharedCounter++;
-                    Monitor.Exit(SyncObj); 
+                    Monitor.Exit(SyncObj);
                 }
                 else
                 {

@@ -10,7 +10,7 @@
         <StackPanel Orientation="Vertical" HorizontalAlignment="Center">
             <Button Content="Запустить гонку данных" Click="ButtonRaceCondition_Click" Margin="5"/>
             <Button Content="Запустить безопасное добавление" Click="ButtonSafeAdd_Click" Margin="5"/>
-            <Button Content="Запустить монитор с таймаутом" Click="ButtonMonitorTimeout_Click" Margin="5"/>
+            <Button Content="Запустить монитор с таймаутом" Click="ButtonMonitorTimeout_Click" Margin="6"/>
         </StackPanel>
     </Grid>
 </Window>
