@@ -16,96 +16,100 @@ namespace WpfSystemProgramming5
     /// </summary>
     public partial class MainWindow : Window
     {
-        private static int SharedCounter = 0;
-        private readonly object SyncObj = new object();
+        private int counter = 0;
+        private readonly object syncLock = new();
+        private List<int> results = new();
+        private const int NumIteration = 10;
+
         public MainWindow()
         {
             InitializeComponent();
         }
 
-        private void IncrementWithoutLock()
-        {
-            int temp = SharedCounter;
-            temp++;  
-            SharedCounter = temp;
-        }
-        private void ButtonRaceCondition_Click(object sender, RoutedEventArgs e)
-        {
-            SharedCounter = 0;
-            var threads = new Thread[10];
 
-            for (int i = 0; i < threads.Length; i++)
+        private void RaceData_Click(object sender, RoutedEventArgs e)
+        {
+            raceResult.Content = "";
+            results.Clear();
+            Thread thread1 = new(() => IncrementCounter());
+            Thread thread2 = new(() => IncrementCounter());
+            thread1.Start();
+            thread2.Start();
+            thread1.Join();
+            thread2.Join();
+
+            if (counter != 20)
             {
-                threads[i] = new Thread(() =>
-                {
-                    for (int j = 0; j < 10; j++)
-                        IncrementWithoutLock();
-                });
-                threads[i].Start();
+                raceResult.Content = $"Ошибка: значение должно быть 20, а стало  {counter}";
             }
-
-            foreach (var count in threads)
-             count.Join();
-
-            MessageBox.Show($"Итоговый счетчик: {SharedCounter}", "Результат");
+               
+            
+               
         }
 
-
-        private void IncrementWithLock()
+        private void IncrementCounter()
         {
-            lock (SyncObj)
+            for (int i = 0; i < NumIteration; i++) 
             {
-                int temp = SharedCounter;
-                temp++;
-                SharedCounter = temp;
+                var temp = counter + 1;
+                Thread.Sleep(0);
+                counter = temp;
             }
         }
-            private void ButtonSafeAdd_Click(object sender, RoutedEventArgs e)
-        {
-            SharedCounter = 0;
-            var threads = new Thread[10];
 
-            for (int i = 0; i < threads.Length; i++)
+        private void SafeAdd_Click(object sender, RoutedEventArgs e)
+        {
+            counter = 0;
+            safeResult.Content = "";
+            results.Clear();
+            Thread thread1 = new(() => LockedIncrementCounter());
+            Thread thread2 = new(() => LockedIncrementCounter());
+            thread1.Start();
+            thread2.Start();
+            thread1.Join();
+            thread2.Join();
+
+            if (counter != 20)
             {
-                threads[i] = new Thread(() =>
-                {
-                    for (int j = 0; j < 10; j++)
-                        IncrementWithLock();
-                });
-                threads[i].Start();
+                safeResult.Content = $"Ошибка: значение должно было стать равно 20, но стало {counter}";
             }
-
-            foreach (var t in threads)
-                t.Join();
-
-            MessageBox.Show($"Итоговый счетчик: {SharedCounter}", "Результат");
+                
+            else
+            {
+                safeResult.Content = "Все отлично!";
+            }
+              
         }
-        private void ButtonMonitorTimeout_Click(object sender, RoutedEventArgs e)
+
+        private void LockedIncrementCounter()
         {
-            bool success = false;
+            for (int i = 0; i < NumIteration; i++) 
+            {
+                lock (syncLock)
+                    ++counter;
+            }
+        }
+
+        private void MonitorTimeout_Click(object sender, RoutedEventArgs e)
+        {
+            monitorResult.Content = "";
+            bool entered = false;
             try
             {
-                if (Monitor.TryEnter(SyncObj, TimeSpan.FromMilliseconds(10)))
-                {
-                    success = true;
-                    SharedCounter++;
-                    Monitor.Exit(SyncObj); 
-                }
+                entered = Monitor.TryEnter(syncLock, TimeSpan.FromMilliseconds(10));
+                if (!entered)
+                    monitorResult.Content = "Монитор занят другим потоком.";
                 else
-                {
-                    MessageBox.Show("Не удалось захватить блокировку.", "Ошибка");
-                }
+                    monitorResult.Content = " успешно";
             }
-            catch (SynchronizationLockException ex)
+            finally
             {
-                MessageBox.Show(ex.Message, "Ошибка синхронизации");
+                if (entered)
+                 Monitor.Exit(syncLock);
             }
-
-            if (success)
-                MessageBox.Show($"Счетчик увеличен до {SharedCounter}.", "Результат");
         }
-    }
 
+    }
 }
 
 

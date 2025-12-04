@@ -6,11 +6,15 @@
         xmlns:local="clr-namespace:WpfSystemProgramming5"
         mc:Ignorable="d"
         Title="MainWindow" Height="450" Width="800">
-    <Grid>
-        <StackPanel Orientation="Vertical" HorizontalAlignment="Center">
-            <Button Content="Запустить гонку данных" Click="ButtonRaceCondition_Click" Margin="5"/>
-            <Button Content="Запустить безопасное добавление" Click="ButtonSafeAdd_Click" Margin="5"/>
-            <Button Content="Запустить монитор с таймаутом" Click="ButtonMonitorTimeout_Click" Margin="5"/>
+    <Grid Margin="10">
+        <StackPanel Orientation="Vertical" HorizontalAlignment="Center" VerticalAlignment="Top">
+            
+            <Button Content="Запустить гонку данных" Click="RaceData_Click"/>
+            <Button Content="Запустить безопасное добавление" Click="SafeAdd_Click"/>
+            <Button Content="Проверить монитор с таймаутом" Click="MonitorTimeout_Click"/>
+            <Label Name="raceResult" FontSize="18"/>
+            <Label Name="safeResult" FontSize="18"/>
+            <Label Name="monitorResult" FontSize="18"/>
         </StackPanel>
     </Grid>
 </Window>
